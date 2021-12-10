@@ -1,5 +1,7 @@
+Obs: desculpa, não entendi porque veio um monte de explicação de código em uma linha só.
+
 *Por Enquanto o que fiz foi usar o CSS para:
-1. determinar o background color do body e do canvas para ficar parecido com uma quadra de basquete:
+1. determinar o ba ckground color do body e do canvas para ficar parecido com uma quadra de basquete:
 body {
     background-color: red;
 }
