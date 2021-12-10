@@ -25,19 +25,19 @@ ctx.stroke();
 ctx.closePath();
 
 *Criei os jogadores usando uma classe:
-class Player {
-    constructor(positionX) {
-        this.positionX = positionX;
-        this.positionY = 265;
-        this.speedX = 0;
-        this.speedY = 0;
-    };
+  class Player {
+      constructor(positionX) {
+          this.positionX = positionX;
+          this.positionY = 265;
+          this.speedX = 0;
+          this.speedY = 0;
+      };
 
-    draw = () => {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(this.positionX, this.positionY, 20, 70);
-    };
-};
+      draw = () => {
+          ctx.fillStyle = 'white';
+          ctx.fillRect(this.positionX, this.positionY, 20, 70);
+      };
+  };
 
 *Criei a bola do jogo usando um objeto:
 const ball = {
