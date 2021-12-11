@@ -25,12 +25,12 @@ canvas {
 }
 ```
 ### _Código no scripts/script.js_
-- Capturei o canvas:
+##### _Capturei o canvas:_
 ```sh
 const canvas = document.getElementById('project');
 const ctx = canvas.getContext('2d');
 ```
-- Desenhei uma linha tracejada no meio do canvas com a intenção de imitar uma rede de quadra de tênis:
+##### _Desenhei uma linha tracejada no meio do canvas com a intenção de imitar uma rede de quadra de tênis:_
 ```sh
 ctx.beginPath();
 ctx.moveTo(638, 0);
@@ -41,6 +41,7 @@ ctx.strokeStyle = "white";
 ctx.stroke();
 ctx.closePath();
 ```
+##### _Classe Player_
 - Criei a classe Player que será dois retângulos, que no caso representará os dois jogadores no jogo de Pong. Como ambos os jogadores tem as posicões no y inicial e suas velocidades iniciais iguais, já coloquei elas na classe, somente a posição no x que altera:
 ```sh
 class Player {
@@ -78,6 +79,7 @@ const player2 = new Player(1240);
 player1.draw();
 player2.draw();
 ```
+##### _Criei o objeto ball_
 - Crie a bola do jogo usando um objeto:
 ```sh
 const player1 = new Player(20);
@@ -98,6 +100,7 @@ const ball = {
 ```sh
 ball.draw();
 ```
+##### _Começo da criação da classe Rectangle_
 - E como tem códigos repetitivos comecei a criar a classe Rectangle para depois usar essa classe para criar a classe Player, os objetos player1, player2 e ball. Mas por enquanto está incompleta por isso está comentada:
 ```sh
 /*
