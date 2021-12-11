@@ -9,14 +9,13 @@ ctx.setLineDash([5, 3]);
 ctx.strokeStyle = "white";
 ctx.stroke();
 ctx.closePath();
-/*
+
 class Rectangle {
-    constructor() {
+    constructor(positionX, positionY, width, height) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.width = width;
         this.height = height;
-        this.speedX = 0;
         this.speedY = 0;
     };
 
@@ -28,32 +27,22 @@ class Rectangle {
 
 class Player extends Rectangle {
     constructor(positionX) {
-        super(positionX, 265, 20, 70);
-
-    }
-} */
-
-class Player {
-    constructor(positionX) {
-        this.positionX = positionX;
-        this.positionY = 265;
-        this.speedX = 0;
-        this.speedY = 0;
+        super(positionX, 265, 20, 70, 0);
     };
 
-    draw = () => {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(this.positionX, this.positionY, 20, 70);
+    moveUp = () => {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
+        this.speedY = 8;
+        this.positionY -= this.speedY;
+        this.draw();
     };
-};
 
-const ball = {
-    positionX: 615,
-    positionY: 290,
-    draw () {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(this.positionX, this.positionY, 20, 20);
-    },
+    moveDown = () => {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
+        this.speedY = 8;
+        this.positionY += this.speedY;
+        this.draw();
+    };
 };
 
 const player1 = new Player(20);
@@ -61,5 +50,32 @@ const player2 = new Player(1240);
 
 player1.draw();
 player2.draw();
+
+window.addEventListener("load", () => {
+    document.addEventListener("keydown", (e) => {
+        switch (e.key) {
+            case "w":
+                player1.moveUp();
+                break;
+            case "s":
+                player1.moveDown();
+                break;
+            case "ArrowUp":
+                player2.moveUp();
+                break;
+            case "ArrowDown":
+                player2.moveDown();
+        };
+    });
+});
+
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, 0);
+        this.speedX = 0;
+    };
+};
+
+const ball = new Ball();
 
 ball.draw();
