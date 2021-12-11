@@ -80,7 +80,7 @@ player1.draw();
 player2.draw();
 ```
 ##### _Criei o objeto ball_
-- Crie a bola do jogo usando um objeto:
+- Criei a bola do jogo usando um objeto:
 ```sh
 const player1 = new Player(20);
 const player2 = new Player(1240);
