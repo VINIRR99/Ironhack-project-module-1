@@ -349,7 +349,6 @@ class Ball extends Rectangle {
 ```sh
 ball.move();
 ```
-<<<<<<< HEAD
 # 4º commit
 ### _Alteração na classe Rectangle_
 - Finalmente descobri porque a bola não se movia do jeito que devia. Eu erroneamente coloquei o this.speedY = 0, o que impossibilitava futuras alterações. Alterei isso e coloquei this.speedY = speedY, e adicionei o speedY ao construtor:
@@ -461,5 +460,66 @@ class Player extends Rectangle {
     };
 };
 ```
-=======
->>>>>>> 7137b7c564db2ab0d7c3940be4b8c653f004c9b2
+# 5º commit
+### _Alterações na classe Ball_
+- Criei a função crashWith com a intenção de usa-la para mudar a direção da bola quando ela chocar com os jogadores;
+- Mudei o primeiro condicional da função newPosition() para checar se a bola choca com algum dos jogadores, se sim, a bola deve mudar de direção
+- Adicionei um clearInterval na função moveBall() para essa função parar de repetir se a bola sair do campo de visão do canvas;
+- Mudei as velocidades de speedX e speedY.
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, -2);
+        this.speedX = 8;
+    };
+
+    left() {
+        return this.positionX;
+    };
+    right() {
+        return this.positionX + this.width;
+    };
+    top() {
+        return this.positionY;
+    };
+    bottom() {
+        return this.positionY + this.height;
+    };
+    
+    crashWith(obstacle) {
+        return !(
+          this.bottom() < obstacle.top() ||
+          this.top() > obstacle.bottom() ||
+          this.right() < obstacle.left() ||
+          this.left() > obstacle.right()
+        );
+    };
+
+    newPosition() {
+        updateCanvas();
+
+        const crashedPlayer1 = this.crashWith(player1);
+        const crashedPlayer2 = this.crashWith(player2);
+
+        if(crashedPlayer1 || crashedPlayer2) {
+            this.speedX = -this.speedX;
+        };
+        if((this.positionY + this.speedY) > (canvas.height - this.height) || (this.positionY + this.speedY) < 0) {
+            this.speedY = -this.speedY;
+        };
+
+        this.positionX += this.speedX;
+        this.positionY += this.speedY;
+    };
+
+    moveBall() {
+        const intervalId = setInterval(() => {
+            this.newPosition();
+
+            if (this.positionX > (canvas.width + this.width) || this.positionX < -40) {
+                clearInterval(intervalId);
+            };
+        }, 15);
+    };
+};
+```
