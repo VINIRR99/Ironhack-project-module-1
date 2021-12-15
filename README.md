@@ -349,6 +349,7 @@ class Ball extends Rectangle {
 ```sh
 ball.move();
 ```
+<<<<<<< HEAD
 # 4º commit
 ### _Alteração na classe Rectangle_
 - Finalmente descobri porque a bola não se movia do jeito que devia. Eu erroneamente coloquei o this.speedY = 0, o que impossibilitava futuras alterações. Alterei isso e coloquei this.speedY = speedY, e adicionei o speedY ao construtor:
@@ -460,3 +461,5 @@ class Player extends Rectangle {
     };
 };
 ```
+=======
+>>>>>>> 7137b7c564db2ab0d7c3940be4b8c653f004c9b2
