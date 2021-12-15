@@ -240,3 +240,223 @@ window.addEventListener("load", () => {
     });
 });
 ```
+# 3º commit
+### _Alterações na classe Player, alterações no addEventListener e criação de updateCanvas_
+- Alterei os métodos moveUp() e moveDown() para os jogadores não ultrapassarem a borda do canvas;
+- Retirei os métodos clearRect e this.draw() de moveUp() e moveDown() e coloquei na função function updateCanvas();
+- Chamei updateCanvas() dentro da função addEventListener ("keyDown") para limpar os canvas e desenhar os elementos do canvas toda vez que uma tecla acione o evento;
+```sh
+class Player extends Rectangle {
+    constructor(positionX) {
+        super(positionX, 265, 20, 70, 0);
+    };
+
+    moveUp() {
+        if (this.positionY > 0) {
+            this.speedY = 8;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY -= this.speedY;
+    };
+
+    moveDown() {
+        if (this.positionY < (canvas.height - this.height)) {
+            this.speedY = 8;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY += this.speedY;
+    };
+};
+```
+```sh
+window.addEventListener("load", () => {
+    document.addEventListener("keydown", (e) => {
+        switch (e.key) {
+            case "w":
+                player1.moveUp();
+                break;
+            case "s":
+                player1.moveDown();
+                break;
+            case "ArrowUp":
+                player2.moveUp();
+                break;
+            case "ArrowDown":
+                player2.moveDown();
+        };
+        updateCanvas();
+    });
+});
+```
+```sh
+function updateCanvas() {
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+
+    drawNet();
+    player1.draw();
+    player2.draw();
+    ball.draw();
+};
+```
+### _Alterações na classe Ball_
+- Criei a função move(), que usará um setInterval para repetidamente desenhar a bola em movimento, por enquanto só dará um update no canvas:
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, 0);
+        this.speedX = 0;
+        this.angle = 180;
+    };
+    move() {
+        const intervalId = setInterval(() => {
+            updateCanvas();
+        }, 10);
+    };
+};
+```
+- Depois criei a função newPosition que será usado para determinar a nova posição da bola. Tentei fazer com que a bola quicar quando chocasse com o top e o bottom da borda do canvas, mas quando testei não deu certo, então está incompleto:
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, 0);
+        this.speedX = 0;
+        this.angle = 180;
+    };
+
+    newPosition() {
+        if ((this.positionY + this.speedY) < (canvas.height - this.height) || (this.positionY + this.speedY) > 0) {
+            this.speedY = -2;
+        } else {
+            this.speedY = 2;
+        };
+        this.speedX = 2;
+
+        this.positionX += this.speedX;
+        this.positionY += this.speedY;
+    };
+
+    move() {
+        const intervalId = setInterval(() => {
+            updateCanvas();
+            this.newPosition()
+        }, 10);
+    };
+};
+```
+- Meu teste da função move() criada na classe Ball:
+```sh
+ball.move();
+```
+# 4º commit
+### _Alteração na classe Rectangle_
+- Finalmente descobri porque a bola não se movia do jeito que devia. Eu erroneamente coloquei o this.speedY = 0, o que impossibilitava futuras alterações. Alterei isso e coloquei this.speedY = speedY, e adicionei o speedY ao construtor:
+```sh
+class Rectangle {
+    constructor(positionX, positionY, width, height, speedY) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.width = width;
+        this.height = height;
+        this.speedY = speedY;
+    };
+
+    draw() {
+        ctx.fillStyle = "white";
+        ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
+    };
+};
+```
+### _Alteração classe Ball_
+##### _Com a orientação dos seguintes sites:_
+https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript/Move_the_ball
+https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript/Bounce_off_the_walls
+- Defini os valores de speedX e speedY.
+##### _Criei a função newPosition():_
+- Que contém a função updateCanvas() que irá apagar o canvas depois desenha-lo novamente;
+- contém duas condições que altera o valor das velocidades no case de a bola chocar com uma das bordas do canvas, com o objetivo de fazê-la quicar;
+- adiciona as velocidades às posições no canvas para altera-lase causar o movimento.
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, -2);
+        this.speedX = 2;
+    };
+
+    newPosition() {
+        updateCanvas();
+
+        if((this.positionX + this.speedX) > (canvas.width - this.width) || (this.positionX + this.speedX) < 0) {
+            this.speedX = -this.speedX;
+        };
+        if((this.positionY + this.speedY) > (canvas.height - this.height) || (this.positionY + this.speedY) < 0) {
+            this.speedY = -this.speedY;
+        };
+
+        this.positionX += this.speedX;
+        this.positionY += this.speedY;
+    };
+};
+```
+##### _Criei a função moveBall()_
+- Que ativa a função newPosition() em um setInterval para a função newPosition() repetir a cada 15 milissegundos:
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(615, 290, 20, 20, -2);
+        this.speedX = 2;
+    };
+
+    newPosition() {
+        updateCanvas();
+
+        if((this.positionX + this.speedX) > (canvas.width - this.width) || (this.positionX + this.speedX) < 0) {
+            this.speedX = -this.speedX;
+        };
+        if((this.positionY + this.speedY) > (canvas.height - this.height) || (this.positionY + this.speedY) < 0) {
+            this.speedY = -this.speedY;
+        };
+
+        this.positionX += this.speedX;
+        this.positionY += this.speedY;
+    };
+
+    moveBall() {
+        const intervalId = setInterval(() => {
+            this.newPosition();
+        }, 15);
+    };
+};
+```
+- Depois ativei a função moveBall() assim que a página carregar:
+```sh
+window.onload = ball.moveBall();
+```
+### _Alteração classe Player_
+- Somente alterei as velocidades dos players de 8 para 20:
+```sh
+class Player extends Rectangle {
+    constructor(positionX) {
+        super(positionX, 265, 20, 70, 0);
+    };
+
+    moveUp() {
+        if (this.positionY > 0) {
+            this.speedY = 20;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY -= this.speedY;
+    };
+
+    moveDown() {
+        if (this.positionY < (canvas.height - this.height)) {
+            this.speedY = 20;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY += this.speedY;
+    };
+};
+```
