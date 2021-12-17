@@ -867,3 +867,212 @@ ctx.font = "25px Arial";
 ctx.fillText("CONTROLS", 160, 235);
 ctx.fillText("CONTROLS", 1010, 235);
 ```
+# 7º commit
+### _Alteração na classe Player, criação da função playersText() e alteração no método addEventListener()_
+- Fiz essas alterações porque toda vez que uma tecla era clicada, a função updateCanvas() era ativada, apagando a tela de instroções inicial, antes de começar o jogo (o começo do jogo é quando a função ball.moveBall() é acionada). Então tirei a função updateCanvas() d addEventListener.
+##### _Alteração nas funções moveUp() e moceDown()_
+- Adicionei os mesmos códigos nas duas funções;
+- Adicionei um cleaRect() para limpar a posição anterior dos jogadores antes de mudar suas posições;
+- Adicinei a função draw() no final das funções para desenhar os jogadoes novamente em suas novas posições.
+```sh
+class Player extends Rectangle {
+    constructor(positionX) {
+        super(positionX, 265, 20, 90, 0);
+        this.points = 0;
+    };
+
+    moveUp() {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
+
+        if (this.positionY > 0) {
+            this.speedY = 20;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY -= this.speedY;
+
+        this.draw();
+    };
+
+    moveDown() {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
+
+        if (this.positionY < (canvas.height - this.height)) {
+            this.speedY = 20;
+        } else {
+            this.speedY = 0;
+        };
+        this.positionY += this.speedY;
+
+        this.draw();
+    };
+};
+```
+##### _Criei a função playersText()_
+- Criei essa função para escrever "Player 1" e "Player 2" no canvas após ela ser apagada no addEventListener():
+```sh
+const playersText = () => {
+    ctx.font = "30px serif";
+    ctx.fillStyle = "white";
+    ctx.fillText("Player 1", 20, 50);
+    ctx.fillText("Player 2", 1160, 50);
+};
+```
+- Ativei essa função dentro de drawGameArea() e addEventListener().
+##### _Alteração no método addEventListener()_
+- Removi a função updateCanvas();
+- Adicionei dois clearRect() para apagar os textos criados por playersText();
+Depois do condicional usado para determinar as teclas de comando dos jogadores, ativei a função playersText() para escrever os textos novament:
+```sh
+window.addEventListener("load", () => {
+    document.addEventListener("keydown", (e) => {
+        // Clean the players text
+        ctx.clearRect(20, 28, 100, 30);
+        ctx.clearRect(1160, 28, 100, 30);
+        switch (e.key) {
+            case "w":
+                player1.moveUp();
+                break;
+            case "s":
+                player1.moveDown();
+                break;
+            case "ArrowUp":
+                player2.moveUp();
+                break;
+            case "ArrowDown":
+                player2.moveDown();
+                break;
+            case "Enter":
+                // RestartGame
+                if (player1.points > 3 || player2.points > 3) {
+                    ball.positionX = ball.initialX;
+                    ball.positionY = ball.initialY;
+                    player1.points = 0;
+                    player2.points = 0;
+                    ball.moveBall();
+                };
+        };
+        playersText();
+    });
+    const startGame = (e) => {
+        if (e.key === "Enter") {
+            ball.moveBall();
+            document.removeEventListener("keydown", startGame);
+        };
+    };
+
+    document.addEventListener("keydown", startGame);
+});
+```
+### _Alteração na classe Ball_
+- Aleterei a condição dentro da função moveBall() para acionar o clearInterval;
+- Anteriormente se um dos jogadores conseguisse 4 pontos, o clearInterval() era acionado, agora se um dos jogadores conseguir 5 pontos ela é ativada;
+- També aumentei os valores de speedX e speedY para aumentar a velocidade da bola:
+```sh
+class Ball extends Rectangle {
+    constructor() {
+        super(630, 290, 20, 20, -3);
+        this.speedX = 13;
+        this.initialX = 630;
+        this.initialY = 290;
+    };
+
+    left() {
+        return this.positionX;
+    };
+    right() {
+        return this.positionX + this.width;
+    };
+    top() {
+        return this.positionY;
+    };
+    bottom() {
+        return this.positionY + this.height;
+    };
+    
+    crashWith(obstacle) {
+        return !(
+          this.bottom() < obstacle.top() ||
+          this.top() > obstacle.bottom() ||
+          this.right() < obstacle.left() ||
+          this.left() > obstacle.right()
+        );
+    };
+
+    newPosition() {
+        updateCanvas();
+
+        const crashedPlayer1 = this.crashWith(player1);
+        const crashedPlayer2 = this.crashWith(player2);
+
+        // Bounce if ball touch player:
+        if(crashedPlayer1 || crashedPlayer2) {
+            this.speedX = -this.speedX;
+        };
+
+        const touchTop = (this.positionY + this.speedY) < 0;
+        const touchBottom = (this.positionY + this.speedY) > (canvas.height - this.height);
+
+        // Bounce if ball touch the top or the bottom of the canvas:
+        if(touchTop || touchBottom) {
+            this.speedY = -this.speedY;
+        };
+
+        this.positionX += this.speedX;
+        this.positionY += this.speedY;
+    };
+
+    moveBall() {
+        setTimeout(() => {
+            const intervalId = setInterval(() => {
+                this.newPosition();
+
+                const crossedRightGoal = this.positionX > canvas.width;
+                const crossedLeftGoal = this.positionX < (0 - this.width);
+
+                // Return ball to its initial position:
+                if (crossedRightGoal || crossedLeftGoal) {
+                    setTimeout(() => {
+                        this.positionX = this.initialX;
+                        this.positionY = this.initialY;
+                    }, 500);
+                };
+    
+                const player1Won = player1.points > 4;
+                const player2Won = player2.points > 4;
+
+                // Stop the function if one of the players has won:
+                if (player1Won || player2Won) {
+                    clearInterval(intervalId);
+                };
+            }, 15);
+        }, 500);
+    };
+};
+```
+- Na função checkWinner() fiz a mesma coisa:
+```sh
+function checkWinner() {
+    const player1Won = (player1.points > 4);
+    const player2Won = (player2.points > 4);
+
+    if (player1Won || player2Won) {
+        // Restart instruction:
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText("PRESS ENTER TO RESTART", 450, 340);
+    };
+
+    ctx.font = "50px serif";
+    ctx.fillStyle = "red";
+
+    if (player1Won) {
+        // Congratulation message:
+        ctx.fillText("PLAYER 1 HAS WON!", 400, canvas.height / 2);
+    };
+    if (player2Won) {
+        // Congratulation message:
+        ctx.fillText("PLAYER 2 HAS WON!", 400, canvas.height / 2);
+    };
+};
+```
