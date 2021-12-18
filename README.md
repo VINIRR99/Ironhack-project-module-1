@@ -917,7 +917,8 @@ const playersText = () => {
 ##### _Alteração no método addEventListener()_
 - Removi a função updateCanvas();
 - Adicionei dois clearRect() para apagar os textos criados por playersText();
-- Depois do condicional usado para determinar as teclas de comando dos jogadores, ativei a função playersText() para escrever os textos novament e usei a função draw() nos dois jogadores:
+- Depois do condicional usado para determinar as teclas de comando dos jogadores, ativei a função playersText() para escrever os textos novament e usei a função draw() nos dois jogadores;
+- Mudei a condição para dar restart no game para se um dos jogadores atingir 5 pontos:
 ```sh
 window.addEventListener("load", () => {
     document.addEventListener("keydown", (e) => {
@@ -939,6 +940,9 @@ window.addEventListener("load", () => {
                 break;
             case "Enter":
                 // RestartGame
+                const player1Won = (player1.points > 4);
+                const player2Won = (player2.points > 4);
+
                 if (player1.points > 3 || player2.points > 3) {
                     ball.positionX = ball.initialX;
                     ball.positionY = ball.initialY;

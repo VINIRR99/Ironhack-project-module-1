@@ -248,7 +248,10 @@ window.addEventListener("load", () => {
                 break;
             case "Enter":
                 // RestartGame
-                if (player1.points > 3 || player2.points > 3) {
+                const player1Won = (player1.points > 4);
+                const player2Won = (player2.points > 4);
+
+                if (player1Won || player2Won) {
                     ball.positionX = ball.initialX;
                     ball.positionY = ball.initialY;
                     player1.points = 0;
