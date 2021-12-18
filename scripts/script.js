@@ -45,17 +45,12 @@ ctx.font = "25px Arial";
 ctx.fillText("CONTROLS", 160, 235);
 ctx.fillText("CONTROLS", 1010, 235);
 
-
-// Create the texts "Player1" and "Player2" on canvas:
-const playersText = () => {
+const drawGameArea = () => {
+    // Create the texts "Player1" and "Player2" on canvas:
     ctx.font = "30px serif";
     ctx.fillStyle = "white";
     ctx.fillText("Player 1", 20, 50);
     ctx.fillText("Player 2", 1160, 50);
-};
-
-const drawGameArea = () => {
-    playersText();
 
     // Draw the net no the canvas:
     ctx.beginPath();
@@ -114,10 +109,8 @@ class Player extends Rectangle {
     };
 
     moveUp() {
-        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
-
         if (this.positionY > 0) {
-            this.speedY = 20;
+            this.speedY = 10;
         } else {
             this.speedY = 0;
         };
@@ -125,10 +118,8 @@ class Player extends Rectangle {
     };
 
     moveDown() {
-        ctx.clearRect(this.positionX, this.positionY, this.width, this.height);
-
         if (this.positionY < (canvas.height - this.height)) {
-            this.speedY = 20;
+            this.speedY = 10;
         } else {
             this.speedY = 0;
         };
@@ -227,26 +218,32 @@ const ball = new Ball();
 
 ball.draw();
 
+const controllers = [
+    {keyCode: 87, pressed: false, func() {player1.moveUp()}},
+    {keyCode: 83, pressed: false, func() {player1.moveDown()}},
+    {keyCode: 38, pressed: false, func() {player2.moveUp()}},
+    {keyCode: 40, pressed: false, func() {player2.moveDown()}},
+];
 
 window.addEventListener("load", () => {
     document.addEventListener("keydown", (e) => {
         // Clean the players text
         ctx.clearRect(20, 28, 100, 30);
         ctx.clearRect(1160, 28, 100, 30);
-        switch (e.key) {
-            case "w":
-                player1.moveUp();
+        switch (e.keyCode) {
+            case controllers[0].keyCode:
+                controllers[0].pressed = true;
                 break;
-            case "s":
-                player1.moveDown();
+            case controllers[1].keyCode:
+                controllers[1].pressed = true;
                 break;
-            case "ArrowUp":
-                player2.moveUp();
+            case controllers[2].keyCode:
+                controllers[2].pressed = true;
                 break;
-            case "ArrowDown":
-                player2.moveDown();
+            case controllers[3].keyCode:
+                controllers[3].pressed = true;
                 break;
-            case "Enter":
+            case 13:
                 // RestartGame
                 const player1Won = (player1.points > 4);
                 const player2Won = (player2.points > 4);
@@ -259,10 +256,24 @@ window.addEventListener("load", () => {
                     ball.moveBall();
                 };
         };
-        player1.draw();
-        player2.draw();
-        playersText();
+        updateCanvas();
     });
+    document.addEventListener("keyup", (e) => {
+        switch (e.keyCode) {
+            case controllers[0].keyCode:
+                controllers[0].pressed = false;
+                break;
+            case controllers[1].keyCode:
+                controllers[1].pressed = false;
+                break;
+            case controllers[2].keyCode:
+                controllers[2].pressed = false;
+                break;
+            case controllers[3].keyCode:
+                controllers[3].pressed = false;
+        };
+    });
+
     const startGame = (e) => {
         if (e.key === "Enter") {
             ball.moveBall();
@@ -272,6 +283,14 @@ window.addEventListener("load", () => {
 
     document.addEventListener("keydown", startGame);
 });
+
+function executeMoves() {
+    controllers.map(controller => {
+      if (controller.pressed === true) {
+          controller.func();
+        };
+    });
+};
 
 function printScore() {
     ctx.font = '40px serif';
@@ -326,6 +345,7 @@ function checkWinner() {
 function updateCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    executeMoves();
     checkScore();
     drawGameArea();
     player1.draw();

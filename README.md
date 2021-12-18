@@ -1077,3 +1077,101 @@ function checkWinner() {
     };
 };
 ```
+# 8º commit
+### _Com a ajuda do seguinte site, consegui fazer os dois jogadores se moverem ao mesmo tempo_
+https://medium.com/@dovern42/handling-multiple-key-presses-at-once-in-vanilla-javascript-for-game-controllers-6dcacae931b7
+##### _Criei um array na variável controllers para ser usado para criar o movimento dos jogadores_
+```sh
+const controllers = [
+    {keyCode: 87, pressed: false, func() {player1.moveUp()}},
+    {keyCode: 83, pressed: false, func() {player1.moveDown()}},
+    {keyCode: 38, pressed: false, func() {player2.moveUp()}},
+    {keyCode: 40, pressed: false, func() {player2.moveDown()}},
+];
+```
+##### _Alterei o addEventeListener para alterar o valor da chave pressed de acordo com os comandos do usuário_
+- Também adicionei um addEventListener "keyup" para mudar o valor de pressed para false novamente assim que o usuário retirar o dedo da tecla de comando:
+```sh
+window.addEventListener("load", () => {
+    document.addEventListener("keydown", (e) => {
+        // Clean the players text
+        ctx.clearRect(20, 28, 100, 30);
+        ctx.clearRect(1160, 28, 100, 30);
+        switch (e.keyCode) {
+            case controllers[0].keyCode:
+                controllers[0].pressed = true;
+                break;
+            case controllers[1].keyCode:
+                controllers[1].pressed = true;
+                break;
+            case controllers[2].keyCode:
+                controllers[2].pressed = true;
+                break;
+            case controllers[3].keyCode:
+                controllers[3].pressed = true;
+                break;
+            case 13:
+                // RestartGame
+                const player1Won = (player1.points > 4);
+                const player2Won = (player2.points > 4);
+
+                if (player1Won || player2Won) {
+                    ball.positionX = ball.initialX;
+                    ball.positionY = ball.initialY;
+                    player1.points = 0;
+                    player2.points = 0;
+                    ball.moveBall();
+                };
+        };
+        updateCanvas();
+    });
+    document.addEventListener("keyup", (e) => {
+        switch (e.keyCode) {
+            case controllers[0].keyCode:
+                controllers[0].pressed = false;
+                break;
+            case controllers[1].keyCode:
+                controllers[1].pressed = false;
+                break;
+            case controllers[2].keyCode:
+                controllers[2].pressed = false;
+                break;
+            case controllers[3].keyCode:
+                controllers[3].pressed = false;
+        };
+    });
+
+    const startGame = (e) => {
+        if (e.key === "Enter") {
+            ball.moveBall();
+            document.removeEventListener("keydown", startGame);
+        };
+    };
+
+    document.addEventListener("keydown", startGame);
+});
+```
+##### _Criei a função executeMove() para executar a função func() toda vez que pressed for verdadeiro_
+```sh
+function executeMoves() {
+    controllers.map(controller => {
+      if (controller.pressed === true) {
+          controller.func();
+        };
+    });
+};
+```
+##### _Ativei a função executeMoves() à função updateCanvas()_
+```sh
+function updateCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    executeMoves();
+    checkScore();
+    drawGameArea();
+    player1.draw();
+    player2.draw();
+    ball.draw();
+    checkWinner();
+};
+```
