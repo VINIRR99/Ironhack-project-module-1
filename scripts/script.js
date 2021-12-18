@@ -45,12 +45,17 @@ ctx.font = "25px Arial";
 ctx.fillText("CONTROLS", 160, 235);
 ctx.fillText("CONTROLS", 1010, 235);
 
-const drawGameArea = () => {
+const playersText = () => {
     // Create the texts "Player1" and "Player2" on canvas:
     ctx.font = "30px serif";
     ctx.fillStyle = "white";
     ctx.fillText("Player 1", 20, 50);
     ctx.fillText("Player 2", 1160, 50);
+};
+
+const drawGameArea = () => {
+    // Create the texts "Player1" and "Player2" on canvas:
+    playersText();
 
     // Draw the net no the canvas:
     ctx.beginPath();
@@ -109,21 +114,29 @@ class Player extends Rectangle {
     };
 
     moveUp() {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height)
+
         if (this.positionY > 0) {
             this.speedY = 10;
         } else {
             this.speedY = 0;
         };
         this.positionY -= this.speedY;
+
+        this.draw();
     };
 
     moveDown() {
+        ctx.clearRect(this.positionX, this.positionY, this.width, this.height)
+
         if (this.positionY < (canvas.height - this.height)) {
             this.speedY = 10;
         } else {
             this.speedY = 0;
         };
         this.positionY += this.speedY;
+
+        this.draw();
     };
 };
 
@@ -136,7 +149,7 @@ player2.draw();
 class Ball extends Rectangle {
     constructor() {
         super(630, 290, 20, 20, -3);
-        this.speedX = 13;
+        this.speedX = 17;
         this.initialX = 630;
         this.initialY = 290;
     };
@@ -256,7 +269,8 @@ window.addEventListener("load", () => {
                     ball.moveBall();
                 };
         };
-        updateCanvas();
+        playersText();
+        executeMoves();
     });
     document.addEventListener("keyup", (e) => {
         switch (e.keyCode) {
@@ -305,8 +319,8 @@ function printScore() {
 printScore();
 
 function checkScore() {
-    const crossedRightGoal = ball.positionX > (canvas.width + 425);
-    const crossedLeftGoal = ball.positionX < (0 - ball.width - 425);
+    const crossedRightGoal = ball.positionX > (canvas.width + 550);
+    const crossedLeftGoal = ball.positionX < (0 - ball.width - 550);
 
     if (crossedRightGoal) {
         player1.points += 1;
