@@ -872,8 +872,7 @@ ctx.fillText("CONTROLS", 1010, 235);
 - Fiz essas alterações porque toda vez que uma tecla era clicada, a função updateCanvas() era ativada, apagando a tela de instroções inicial, antes de começar o jogo (o começo do jogo é quando a função ball.moveBall() é acionada). Então tirei a função updateCanvas() d addEventListener.
 ##### _Alteração nas funções moveUp() e moceDown()_
 - Adicionei os mesmos códigos nas duas funções;
-- Adicionei um cleaRect() para limpar a posição anterior dos jogadores antes de mudar suas posições;
-- Adicinei a função draw() no final das funções para desenhar os jogadoes novamente em suas novas posições.
+- Adicionei um cleaRect() para limpar a posição anterior dos jogadores antes de mudar suas posições.
 ```sh
 class Player extends Rectangle {
     constructor(positionX) {
@@ -890,8 +889,6 @@ class Player extends Rectangle {
             this.speedY = 0;
         };
         this.positionY -= this.speedY;
-
-        this.draw();
     };
 
     moveDown() {
@@ -903,8 +900,6 @@ class Player extends Rectangle {
             this.speedY = 0;
         };
         this.positionY += this.speedY;
-
-        this.draw();
     };
 };
 ```
@@ -922,7 +917,7 @@ const playersText = () => {
 ##### _Alteração no método addEventListener()_
 - Removi a função updateCanvas();
 - Adicionei dois clearRect() para apagar os textos criados por playersText();
-Depois do condicional usado para determinar as teclas de comando dos jogadores, ativei a função playersText() para escrever os textos novament:
+- Depois do condicional usado para determinar as teclas de comando dos jogadores, ativei a função playersText() para escrever os textos novament e usei a função draw() nos dois jogadores:
 ```sh
 window.addEventListener("load", () => {
     document.addEventListener("keydown", (e) => {
@@ -952,6 +947,8 @@ window.addEventListener("load", () => {
                     ball.moveBall();
                 };
         };
+        player1.draw();
+        player2.draw();
         playersText();
     });
     const startGame = (e) => {

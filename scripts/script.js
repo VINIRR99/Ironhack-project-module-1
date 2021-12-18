@@ -122,8 +122,6 @@ class Player extends Rectangle {
             this.speedY = 0;
         };
         this.positionY -= this.speedY;
-
-        this.draw();
     };
 
     moveDown() {
@@ -135,8 +133,6 @@ class Player extends Rectangle {
             this.speedY = 0;
         };
         this.positionY += this.speedY;
-
-        this.draw();
     };
 };
 
@@ -260,6 +256,8 @@ window.addEventListener("load", () => {
                     ball.moveBall();
                 };
         };
+        player1.draw();
+        player2.draw();
         playersText();
     });
     const startGame = (e) => {
